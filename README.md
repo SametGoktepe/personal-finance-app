@@ -509,7 +509,7 @@ php artisan migrate:fresh --seed
 - [ ] Multi-user support with roles
 - [ ] Receipt attachment support
 - [ ] Advanced analytics and insights
-- [ ] More currencies from API
+- [x] More currencies from API
 
 ## 📸 Screenshots
 
