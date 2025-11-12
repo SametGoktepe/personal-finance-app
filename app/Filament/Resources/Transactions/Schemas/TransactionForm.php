@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Transactions\Schemas;
 
 use App\Models\ExchangeRate;
+use App\Services\CurrencyService;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -60,8 +61,19 @@ class TransactionForm
                         $currency = $get('currency');
                         $date = $get('transaction_date');
                         if ($currency && $currency !== 'TRY' && $date) {
-                            $rate = ExchangeRate::getRate($currency, 'TRY', $date);
-                            $set('exchange_rate', $rate);
+                            $currencyService = app(CurrencyService::class);
+
+                            // Try to get live rate first
+                            $liveRate = $currencyService->getRateToTRY($currency);
+
+                            // If live rate available, use it
+                            if ($liveRate && $liveRate !== 1.0) {
+                                $set('exchange_rate', $liveRate);
+                            } else {
+                                // Fallback to database
+                                $rate = ExchangeRate::getRate($currency, 'TRY', $date);
+                                $set('exchange_rate', $rate);
+                            }
                         }
                     }),
 
@@ -83,8 +95,17 @@ class TransactionForm
                         $amount = $get('amount');
                         $date = $get('transaction_date');
                         if ($state && $state !== 'TRY' && $date) {
-                            $rate = ExchangeRate::getRate($state, 'TRY', $date);
-                            $set('exchange_rate', $rate);
+                            $currencyService = app(CurrencyService::class);
+
+                            // Try to get live rate first
+                            $liveRate = $currencyService->getRateToTRY($state);
+
+                            if ($liveRate && $liveRate !== 1.0) {
+                                $set('exchange_rate', $liveRate);
+                            } else {
+                                $rate = ExchangeRate::getRate($state, 'TRY', $date);
+                                $set('exchange_rate', $rate);
+                            }
                         } else {
                             $set('exchange_rate', 1);
                         }
@@ -108,8 +129,16 @@ class TransactionForm
                     ->afterStateUpdated(function ($state, callable $set, Get $get) {
                         $currency = $get('currency');
                         if ($currency && $currency !== 'TRY' && $state) {
-                            $rate = ExchangeRate::getRate($currency, 'TRY', $state);
-                            $set('exchange_rate', $rate);
+                            $currencyService = app(CurrencyService::class);
+
+                            $liveRate = $currencyService->getRateToTRY($currency);
+
+                            if ($liveRate && $liveRate !== 1.0) {
+                                $set('exchange_rate', $liveRate);
+                            } else {
+                                $rate = ExchangeRate::getRate($currency, 'TRY', $state);
+                                $set('exchange_rate', $rate);
+                            }
                         }
                     }),
 

@@ -38,6 +38,8 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
+            "@php artisan db:seed --force",
+            "@php artisan rates:update",
             "npm install",
             "npm run build"
         ],
@@ -48,6 +50,9 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "update-rates": [
+            "@php artisan rates:update"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
