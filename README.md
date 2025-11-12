@@ -17,6 +17,7 @@ A modern, feature-rich personal finance management application built with Larave
 - 💱 **[Multi-Currency Guide](MULTI_CURRENCY_GUIDE.md)** - Currency features explained
 - 🌐 **[Currency API Integration](CURRENCY_API_GUIDE.md)** - Live rate API details
 - 💰 **[Currency Management](docs/CURRENCY_MANAGEMENT.md)** - Add/manage currencies from admin panel
+- 📄 **[PDF Reports](docs/PDF_REPORTS.md)** - Generate and export financial reports
 - 📋 **[Complete Feature List](docs/FEATURES.md)** - All 100+ features documented
 - 🔌 **[API Integration Guide](docs/API_INTEGRATION.md)** - Technical API documentation
 
@@ -42,6 +43,9 @@ A modern, feature-rich personal finance management application built with Larave
 - **Income vs Expense Charts** - Visual representation of last 12 months
 - **Upcoming Subscriptions Widget** - 14-day preview of subscription payments
 - **Latest Transactions** - Quick view of recent activity
+- **PDF Reports** - Export financial summaries, transactions, and subscription reports
+- **Custom Date Ranges** - Generate reports for any period
+- **Professional Layout** - Clean, printable PDF design
 
 ### 🎨 Modern UI/UX
 - **Filament Admin Panel** - Beautiful, responsive interface
@@ -263,6 +267,26 @@ Manage currency conversions:
 ```bash
 php artisan rates:update
 ```
+
+### PDF Reports
+
+**Finance > Reports**
+
+Generate professional PDF reports:
+- **Financial Summary** - Complete overview with charts and breakdowns
+- **Transactions Report** - Detailed transaction history with filters
+- **Subscriptions Report** - Recurring payments analysis
+- **Custom Date Ranges** - Select any period
+- **One-Click Export** - Automatic PDF download
+- **Multi-Currency Support** - Shows original and TRY amounts
+
+**Features:**
+- Professional design with color-coded data
+- Income (green) and Expense (red) indicators
+- Category breakdowns with percentages
+- Account balances and summaries
+- Subscription cost projections
+- Print-ready format
 
 ## 🗂️ Project Structure
 
@@ -500,8 +524,8 @@ php artisan migrate:fresh --seed
 - [x] Live API integration for exchange rates ✅
 - [x] Subscription management system ✅
 - [x] Multi-currency support ✅
-- [x] Mobile responsive dashboard improvements
-- [ ] PDF report generation
+- [x] Mobile responsive dashboard improvements ✅
+- [x] PDF report generation ✅
 - [ ] Data export (CSV, Excel)
 - [ ] Automated subscription renewal transactions
 - [ ] Email notifications for upcoming payments
