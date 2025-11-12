@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExchangeRates\Tables;
 
+use App\Models\Currency;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -55,22 +56,10 @@ class ExchangeRatesTable
             ])
             ->filters([
                 SelectFilter::make('from_currency')
-                    ->options([
-                        'TRY' => 'TRY',
-                        'USD' => 'USD',
-                        'EUR' => 'EUR',
-                        'GBP' => 'GBP',
-                        'JPY' => 'JPY',
-                    ]),
+                    ->options(fn () => Currency::getActive()),
 
                 SelectFilter::make('to_currency')
-                    ->options([
-                        'TRY' => 'TRY',
-                        'USD' => 'USD',
-                        'EUR' => 'EUR',
-                        'GBP' => 'GBP',
-                        'JPY' => 'JPY',
-                    ]),
+                    ->options(fn () => Currency::getActive()),
 
                 SelectFilter::make('is_active')
                     ->label('Status')

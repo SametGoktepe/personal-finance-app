@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Accounts\Tables;
 
+use App\Models\Currency;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -78,13 +79,7 @@ class AccountsTable
                     ]),
 
                 SelectFilter::make('currency')
-                    ->options([
-                        'TRY' => 'TRY',
-                        'USD' => 'USD',
-                        'EUR' => 'EUR',
-                        'GBP' => 'GBP',
-                        'JPY' => 'JPY',
-                    ]),
+                    ->options(fn () => Currency::getActive()),
 
                 SelectFilter::make('is_active')
                     ->label('Status')

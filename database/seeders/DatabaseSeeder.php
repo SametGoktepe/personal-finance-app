@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Account;
 use App\Models\Budget;
 use App\Models\Category;
+use App\Models\Currency;
 use App\Models\ExchangeRate;
 use App\Models\Subscription;
 use App\Models\Transaction;
@@ -22,6 +23,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create currencies first
+        $this->call(CurrencySeeder::class);
+
         // Create admin user
         $user = User::create([
             'name' => 'Admin User',

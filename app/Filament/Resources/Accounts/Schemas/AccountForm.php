@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Accounts\Schemas;
 
+use App\Models\Currency;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -58,15 +59,9 @@ class AccountForm
 
                 Select::make('currency')
                     ->label('Currency')
-                    ->options([
-                        'TRY' => 'TRY - Turkish Lira',
-                        'USD' => 'USD - US Dollar',
-                        'EUR' => 'EUR - Euro',
-                        'GBP' => 'GBP - British Pound',
-                        'JPY' => 'JPY - Japanese Yen',
-                    ])
+                    ->options(fn () => Currency::getOptions())
                     ->required()
-                    ->default('TRY')
+                    ->default(fn () => Currency::getBase()?->code ?? 'TRY')
                     ->searchable()
                     ->native(false),
 

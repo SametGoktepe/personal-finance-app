@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Currency;
 use App\Models\ExchangeRate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -10,8 +11,6 @@ use Exception;
 class CurrencyService
 {
     protected string $apiUrl = 'https://finans.truncgil.com/v4/today.json';
-
-    protected array $supportedCurrencies = ['USD', 'EUR', 'GBP', 'JPY'];
 
     /**
      * Fetch and update exchange rates from API
@@ -36,25 +35,28 @@ class CurrencyService
 
             $today = now()->toDateString();
 
-            foreach ($this->supportedCurrencies as $currency) {
-                if (!isset($data[$currency])) {
-                    $results['failed'][] = $currency . ' - Not found in API response';
+            // Get API-enabled currencies from database
+            $apiEnabledCurrencies = Currency::getApiEnabled();
+
+            foreach ($apiEnabledCurrencies as $currencyCode) {
+                if (!isset($data[$currencyCode])) {
+                    $results['failed'][] = $currencyCode . ' - Not found in API response';
                     continue;
                 }
 
-                $currencyData = $data[$currency];
+                $currencyData = $data[$currencyCode];
 
                 // Get buying rate (more accurate for expenses)
                 $buyingRate = $currencyData['Buying'] ?? null;
 
                 if (!$buyingRate) {
-                    $results['failed'][] = $currency . ' - No buying rate available';
+                    $results['failed'][] = $currencyCode . ' - No buying rate available';
                     continue;
                 }
 
                 try {
                     // Currency to TRY rate
-                    $rate1 = ExchangeRate::where('from_currency', $currency)
+                    $rate1 = ExchangeRate::where('from_currency', $currencyCode)
                         ->where('to_currency', 'TRY')
                         ->where('date', $today)
                         ->first();
@@ -66,7 +68,7 @@ class CurrencyService
                         ]);
                     } else {
                         ExchangeRate::create([
-                            'from_currency' => $currency,
+                            'from_currency' => $currencyCode,
                             'to_currency' => 'TRY',
                             'rate' => $buyingRate,
                             'date' => $today,
@@ -76,7 +78,7 @@ class CurrencyService
 
                     // TRY to Currency rate (inverse)
                     $rate2 = ExchangeRate::where('from_currency', 'TRY')
-                        ->where('to_currency', $currency)
+                        ->where('to_currency', $currencyCode)
                         ->where('date', $today)
                         ->first();
 
@@ -88,19 +90,19 @@ class CurrencyService
                     } else {
                         ExchangeRate::create([
                             'from_currency' => 'TRY',
-                            'to_currency' => $currency,
+                            'to_currency' => $currencyCode,
                             'rate' => 1 / $buyingRate,
                             'date' => $today,
                             'is_active' => true,
                         ]);
                     }
 
-                    $results['success'][] = $currency . ' - Updated (1 ' . $currency . ' = ' . number_format($buyingRate, 4) . ' TRY)';
+                    $results['success'][] = $currencyCode . ' - Updated (1 ' . $currencyCode . ' = ' . number_format($buyingRate, 4) . ' TRY)';
                     $results['total'] += 2; // Both directions
 
                 } catch (Exception $e) {
-                    $results['failed'][] = $currency . ' - ' . $e->getMessage();
-                    Log::error('Failed to update exchange rate for ' . $currency, [
+                    $results['failed'][] = $currencyCode . ' - ' . $e->getMessage();
+                    Log::error('Failed to update exchange rate for ' . $currencyCode, [
                         'error' => $e->getMessage(),
                     ]);
                 }
@@ -186,7 +188,7 @@ class CurrencyService
      */
     public function getSupportedCurrencies(): array
     {
-        return $this->supportedCurrencies;
+        return Currency::getApiEnabled();
     }
 
     /**

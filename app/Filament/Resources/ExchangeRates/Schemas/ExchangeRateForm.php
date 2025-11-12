@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExchangeRates\Schemas;
 
+use App\Models\Currency;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,26 +17,14 @@ class ExchangeRateForm
             ->components([
                 Select::make('from_currency')
                     ->label('From Currency')
-                    ->options([
-                        'TRY' => 'TRY - Turkish Lira',
-                        'USD' => 'USD - US Dollar',
-                        'EUR' => 'EUR - Euro',
-                        'GBP' => 'GBP - British Pound',
-                        'JPY' => 'JPY - Japanese Yen',
-                    ])
+                    ->options(fn () => Currency::getActive())
                     ->required()
                     ->searchable()
                     ->native(false),
 
                 Select::make('to_currency')
                     ->label('To Currency')
-                    ->options([
-                        'TRY' => 'TRY - Turkish Lira',
-                        'USD' => 'USD - US Dollar',
-                        'EUR' => 'EUR - Euro',
-                        'GBP' => 'GBP - British Pound',
-                        'JPY' => 'JPY - Japanese Yen',
-                    ])
+                    ->options(fn () => Currency::getActive())
                     ->required()
                     ->searchable()
                     ->native(false),

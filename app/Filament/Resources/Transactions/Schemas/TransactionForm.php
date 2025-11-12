@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Transactions\Schemas;
 
+use App\Models\Currency;
 use App\Models\ExchangeRate;
 use App\Services\CurrencyService;
 use Filament\Forms\Components\DatePicker;
@@ -60,7 +61,9 @@ class TransactionForm
                     ->afterStateUpdated(function ($state, callable $set, Get $get) {
                         $currency = $get('currency');
                         $date = $get('transaction_date');
-                        if ($currency && $currency !== 'TRY' && $date) {
+                        $baseCurrency = Currency::getBase()?->code ?? 'TRY';
+
+                        if ($currency && $currency !== $baseCurrency && $date) {
                             $currencyService = app(CurrencyService::class);
 
                             // Try to get live rate first
@@ -71,7 +74,7 @@ class TransactionForm
                                 $set('exchange_rate', $liveRate);
                             } else {
                                 // Fallback to database
-                                $rate = ExchangeRate::getRate($currency, 'TRY', $date);
+                                $rate = ExchangeRate::getRate($currency, $baseCurrency, $date);
                                 $set('exchange_rate', $rate);
                             }
                         }
@@ -79,22 +82,18 @@ class TransactionForm
 
                 Select::make('currency')
                     ->label('Currency')
-                    ->options([
-                        'TRY' => 'TRY - Turkish Lira',
-                        'USD' => 'USD - US Dollar',
-                        'EUR' => 'EUR - Euro',
-                        'GBP' => 'GBP - British Pound',
-                        'JPY' => 'JPY - Japanese Yen',
-                    ])
+                    ->options(fn () => Currency::getOptions())
                     ->required()
-                    ->default('TRY')
+                    ->default(fn () => Currency::getBase()?->code ?? 'TRY')
                     ->searchable()
                     ->native(false)
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set, Get $get) {
                         $amount = $get('amount');
                         $date = $get('transaction_date');
-                        if ($state && $state !== 'TRY' && $date) {
+                        $baseCurrency = Currency::getBase()?->code ?? 'TRY';
+
+                        if ($state && $state !== $baseCurrency && $date) {
                             $currencyService = app(CurrencyService::class);
 
                             // Try to get live rate first
@@ -103,7 +102,7 @@ class TransactionForm
                             if ($liveRate && $liveRate !== 1.0) {
                                 $set('exchange_rate', $liveRate);
                             } else {
-                                $rate = ExchangeRate::getRate($state, 'TRY', $date);
+                                $rate = ExchangeRate::getRate($state, $baseCurrency, $date);
                                 $set('exchange_rate', $rate);
                             }
                         } else {
@@ -112,13 +111,31 @@ class TransactionForm
                     }),
 
                 TextInput::make('exchange_rate')
-                    ->label('Exchange Rate to TRY')
+                    ->label(function () {
+                        $base = Currency::getBase();
+                        return 'Exchange Rate to ' . ($base ? $base->code : 'TRY');
+                    })
                     ->numeric()
                     ->step(0.000001)
                     ->default(1)
-                    ->disabled(fn (Get $get) => $get('currency') === 'TRY')
+                    ->disabled(function (Get $get) {
+                        $base = Currency::getBase();
+                        $baseCode = $base ? $base->code : 'TRY';
+                        return $get('currency') === $baseCode;
+                    })
                     ->dehydrated()
-                    ->helperText(fn (Get $get) => $get('currency') !== 'TRY' ? '1 ' . $get('currency') . ' = ' . $get('exchange_rate') . ' TRY' : null),
+                    ->helperText(function (Get $get) {
+                        $base = Currency::getBase();
+                        $baseCurrency = $base ? $base->code : 'TRY';
+                        $currentCurrency = $get('currency');
+                        $rate = $get('exchange_rate');
+
+                        if ($currentCurrency && $currentCurrency !== $baseCurrency && $rate) {
+                            return '1 ' . $currentCurrency . ' = ' . $rate . ' ' . $baseCurrency;
+                        }
+
+                        return null;
+                    }),
 
                 DatePicker::make('transaction_date')
                     ->label('Transaction Date')
@@ -128,7 +145,9 @@ class TransactionForm
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set, Get $get) {
                         $currency = $get('currency');
-                        if ($currency && $currency !== 'TRY' && $state) {
+                        $baseCurrency = Currency::getBase()?->code ?? 'TRY';
+
+                        if ($currency && $currency !== $baseCurrency && $state) {
                             $currencyService = app(CurrencyService::class);
 
                             $liveRate = $currencyService->getRateToTRY($currency);
@@ -136,7 +155,7 @@ class TransactionForm
                             if ($liveRate && $liveRate !== 1.0) {
                                 $set('exchange_rate', $liveRate);
                             } else {
-                                $rate = ExchangeRate::getRate($currency, 'TRY', $state);
+                                $rate = ExchangeRate::getRate($currency, $baseCurrency, $state);
                                 $set('exchange_rate', $rate);
                             }
                         }

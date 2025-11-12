@@ -16,6 +16,7 @@ A modern, feature-rich personal finance management application built with Larave
 - 🚀 **[Quick Start Guide](QUICKSTART.md)** - Get started in 5 minutes
 - 💱 **[Multi-Currency Guide](MULTI_CURRENCY_GUIDE.md)** - Currency features explained
 - 🌐 **[Currency API Integration](CURRENCY_API_GUIDE.md)** - Live rate API details
+- 💰 **[Currency Management](docs/CURRENCY_MANAGEMENT.md)** - Add/manage currencies from admin panel
 - 📋 **[Complete Feature List](docs/FEATURES.md)** - All 100+ features documented
 - 🔌 **[API Integration Guide](docs/API_INTEGRATION.md)** - Technical API documentation
 
@@ -500,7 +501,7 @@ php artisan migrate:fresh --seed
 - [x] Subscription management system ✅
 - [x] Multi-currency support ✅
 - [x] Mobile responsive dashboard improvements
-- [] PDF report generation
+- [ ] PDF report generation
 - [ ] Data export (CSV, Excel)
 - [ ] Automated subscription renewal transactions
 - [ ] Email notifications for upcoming payments

@@ -19,11 +19,17 @@ Your Personal Finance application now has full multi-currency support with **TRY
 - Exchange rate stored with each transaction for historical accuracy
 
 ### 3. **Supported Currencies**
+**Default Currencies:**
 - 🇹🇷 TRY - Turkish Lira (Base Currency)
-- 🇺🇸 USD - US Dollar
-- 🇪🇺 EUR - Euro
-- 🇬🇧 GBP - British Pound
-- 🇯🇵 JPY - Japanese Yen
+- 🇺🇸 USD - US Dollar (API Enabled)
+- 🇪🇺 EUR - Euro (API Enabled)
+- 🇬🇧 GBP - British Pound (API Enabled)
+- 🇯🇵 JPY - Japanese Yen (API Enabled)
+
+**Easily Extensible:**
+- Add unlimited currencies via admin panel
+- No coding required!
+- See **Settings > Currencies**
 
 ### 4. **Account Types**
 - Bank Account
@@ -32,6 +38,25 @@ Your Personal Finance application now has full multi-currency support with **TRY
 - Credit Card
 - Investment
 - Other
+
+## Managing Currencies
+
+### Adding New Currencies
+
+1. Go to **Settings > Currencies**
+2. Click **"New Currency"**
+3. Fill in details:
+   - **Code**: 3-letter ISO code (e.g., CHF, CAD)
+   - **Name**: Full name (e.g., Swiss Franc)
+   - **Symbol**: Currency symbol (e.g., Fr, C$)
+   - **Decimal Places**: Usually 2 (JPY=0, BTC=8)
+   - **Base Currency**: Only one can be base
+   - **API Enabled**: Check if available in API
+   - **Active**: Enable the currency
+
+4. Save and it's immediately available everywhere!
+
+**60+ currencies available from API!** Check [API Integration Guide](docs/API_INTEGRATION.md) for full list.
 
 ## How to Use
 
